@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/Polygon/">
+    <Project Path="Polygon/testa/testa.csproj" />
+  </Folder>
+  <Project Path="ModularityKit.Telemetry.Metrics/ModularityKit.Telemetry.Metrics.csproj" />
+</Solution>
