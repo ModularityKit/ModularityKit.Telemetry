@@ -1,12 +1,12 @@
-using ModularityKit.Telemetry.Metrics.Abstractions;
-using ModularityKit.Telemetry.Metrics.Abstractions.Emits;
+using ModularityKit.Telemetry.Metrics.Abstractions.Buffers;
 using ModularityKit.Telemetry.Metrics.Abstractions.Instruments;
+using ModularityKit.Telemetry.Metrics.Abstractions.Snapshots;
 using ModularityKit.Telemetry.Metrics.Runtime.Aggregators.Data;
 
 namespace ModularityKit.Telemetry.Metrics.Runtime.Aggregators;
 
 /// <summary>
-/// Aggregates <see cref="HistogramMetric"/> snapshots and periodically flushes them via <see cref="IMetricEmitter"/>.
+/// Aggregates <see cref="HistogramMetric"/> snapshots and periodically flushes them via <see cref="IMetricProcessor"/>.
 /// </summary>
 /// <remarks>
 /// <see cref="HistogramAggregator"/> maintains thread-safe histogram data for each metric and its associated tags.
@@ -14,8 +14,8 @@ namespace ModularityKit.Telemetry.Metrics.Runtime.Aggregators;
 /// The aggregator flushes snapshots at the interval configured in <see cref="BaseAggregator{TKey,TData}"/>.
 /// During flush, both the sum of values and individual bucket counts are emitted as separate snapshots.
 /// </remarks>
-internal sealed class HistogramAggregator(IMetricEmitter emitter, TimeSpan flushInterval)
-    : BaseAggregator<MetricKey, HistogramData>(emitter, flushInterval)
+internal sealed class HistogramAggregator(IMetricProcessor processor, TimeSpan flushInterval)
+    : BaseAggregator<MetricKey, HistogramData>(processor, flushInterval)
 {
     /// <summary>
     /// Adds <see cref="MetricSnapshot"/> to the aggregator.
@@ -26,7 +26,7 @@ internal sealed class HistogramAggregator(IMetricEmitter emitter, TimeSpan flush
     {
         if (snapshot.Metric is not HistogramMetric histMetric)
             return;
-        
+
         var key = new MetricKey(histMetric.Name, snapshot.Tags);
         var data = Store.GetOrAdd(key, _ => new HistogramData(histMetric, snapshot.Environment, snapshot.Tags));
         data.Record(snapshot.Value);

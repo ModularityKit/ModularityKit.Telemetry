@@ -1,3 +1,5 @@
+using ModularityKit.Telemetry.Metrics.Abstractions.Snapshots;
+
 namespace ModularityKit.Telemetry.Metrics.Abstractions.Buffers;
 
 /// <summary>

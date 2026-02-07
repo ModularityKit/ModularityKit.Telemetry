@@ -1,6 +1,6 @@
-using ModularityKit.Telemetry.Metrics.Abstractions;
 using ModularityKit.Telemetry.Metrics.Abstractions.Policy;
 using ModularityKit.Telemetry.Metrics.Abstractions.Instruments;
+using ModularityKit.Telemetry.Metrics.Abstractions.Snapshots;
 
 namespace ModularityKit.Telemetry.Metrics.Runtime.Aggregators;
 
@@ -65,5 +65,11 @@ internal sealed class CompositeMetricAggregator : IMetricAggregator
     {
         var results = await Task.WhenAll(_allAggregators.Select(a => a.FlushAsync()));
         return results.SelectMany(x => x);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        foreach (var aggregator in _allAggregators.OfType<IAsyncDisposable>())
+            await aggregator.DisposeAsync();
     }
 }

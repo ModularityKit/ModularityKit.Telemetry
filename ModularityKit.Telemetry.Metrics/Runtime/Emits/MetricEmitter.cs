@@ -24,38 +24,19 @@ public sealed class MetricEmitter(
     IMetricPipeline? pipeline = null,
     IMetricBuffer? buffer = null,
     ILogger? logger = null)
-    : IMetricEmitter, IAsyncDisposable
+    : IMetricProcessor, IAsyncDisposable
 {
     private readonly ILogger? _logger = logger ?? NullLogger.Instance;
     
-    /// <summary>
-    /// Emits a single metric value.
-    /// </summary>
-    /// <param name="metric">The metric definition to emit.</param>
-    /// <param name="value">The numeric value of the metric.</param>
-    /// <param name="tags">Optional tags associated with this metric.</param>
-    /// <param name="ct">Optional cancellation token.</param>
-    /// <returns>A <see cref="ValueTask"/> representing the asynchronous emission operation.</returns>
-    public ValueTask EmitAsync(
-        MetricDefinition metric,
-        double value,
-        IReadOnlyDictionary<string, object?>? tags = null,
-        CancellationToken ct = default)
+    ValueTask IMetricProcessor.EmitAsync(MetricSnapshot snapshot, CancellationToken ct)
+        => EmitInternal(snapshot, ct);
+    
+    ValueTask IMetricProcessor.EmitBatchAsync(IEnumerable<MetricSnapshot> snapshots, CancellationToken ct)
     {
-        var snapshot = new MetricSnapshot(metric, value, tags, config.Environment);
-        return EmitInternal(snapshot, ct);
+        return EmitBatchInternalAsync(snapshots, ct);
     }
-
-    /// <summary>
-    /// Emits a batch of metric snapshots.
-    /// Each snapshot is optionally processed by the configured <see cref="IMetricPipeline"/>.
-    /// </summary>
-    /// <param name="snapshots">The batch of metric snapshots to emit.</param>
-    /// <param name="ct">Optional cancellation token.</param>
-    /// <returns>A <see cref="ValueTask"/> representing the asynchronous batch emission operation.</returns>
-    public async ValueTask EmitBatchAsync(
-        IEnumerable<MetricSnapshot> snapshots,
-        CancellationToken ct = default)
+    
+    private async ValueTask EmitBatchInternalAsync(IEnumerable<MetricSnapshot> snapshots, CancellationToken ct)
     {
         foreach (var snapshot in snapshots)
         {

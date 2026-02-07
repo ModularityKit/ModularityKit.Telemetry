@@ -1,20 +1,25 @@
+using System.Collections.Generic;
+using System.Linq;
 using ModularityKit.Telemetry.Metrics.Abstractions;
+using ModularityKit.Telemetry.Metrics.Abstractions.Buffers;
 using ModularityKit.Telemetry.Metrics.Abstractions.Emits;
 using ModularityKit.Telemetry.Metrics.Abstractions.Instruments;
+using ModularityKit.Telemetry.Metrics.Abstractions.Snapshots;
 using ModularityKit.Telemetry.Metrics.Runtime.Aggregators.Data;
+using ModularityKit.Telemetry.Metrics.Runtime.Processors;
 
 namespace ModularityKit.Telemetry.Metrics.Runtime.Aggregators;
 
 /// <summary>
-/// Aggregates <see cref="CounterMetric"/> snapshots and periodically flushes them via <see cref="IMetricEmitter"/>.
+/// Aggregates <see cref="CounterMetric"/> snapshots and periodically flushes them via <see cref="IMetricProcessor"/>.
 /// </summary>
 /// <remarks>
 /// <see cref="CounterAggregator"/> maintains thread-safe counts for each counter metric and its associated tags.
 /// Values are aggregated in <see cref="CounterData"/> instances keyed by <see cref="MetricKey"/>.
 /// The aggregator flushes snapshots at the interval configured in the base <see cref="BaseAggregator{TKey,TData}"/> class.
 /// </remarks>
-internal sealed class CounterAggregator(IMetricEmitter emitter, TimeSpan flushInterval)
-    : BaseAggregator<MetricKey, CounterData>(emitter, flushInterval)
+internal sealed class CounterAggregator(IMetricProcessor processor, TimeSpan flushInterval)
+    : BaseAggregator<MetricKey, CounterData>(processor, flushInterval)
 {
     /// <summary>
     /// Adds <see cref="MetricSnapshot"/> to the aggregator.

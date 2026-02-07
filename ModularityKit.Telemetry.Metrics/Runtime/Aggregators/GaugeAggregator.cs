@@ -1,20 +1,20 @@
-using ModularityKit.Telemetry.Metrics.Abstractions;
-using ModularityKit.Telemetry.Metrics.Abstractions.Emits;
+using ModularityKit.Telemetry.Metrics.Abstractions.Buffers;
 using ModularityKit.Telemetry.Metrics.Abstractions.Instruments;
+using ModularityKit.Telemetry.Metrics.Abstractions.Snapshots;
 using ModularityKit.Telemetry.Metrics.Runtime.Aggregators.Data;
 
 namespace ModularityKit.Telemetry.Metrics.Runtime.Aggregators;
 
 /// <summary>
-/// Aggregates <see cref="GaugeMetric"/> snapshots and periodically flushes them via <see cref="IMetricEmitter"/>.
+/// Aggregates <see cref="GaugeMetric"/> snapshots and periodically flushes them via <see cref="IMetricProcessor"/>.
 /// </summary>
 /// <remarks>
 /// <see cref="GaugeAggregator"/> maintains thread-safe gauge values for each metric and its associated tags.
 /// Each gauge is represented by <see cref="GaugeData"/> instance keyed by <see cref="MetricKey"/>.
 /// The aggregator flushes snapshots at the interval configured in <see cref="BaseAggregator{TKey,TData}"/>.
 /// </remarks>
-internal sealed class GaugeAggregator(IMetricEmitter emitter, TimeSpan flushInterval)
-    : BaseAggregator<MetricKey, GaugeData>(emitter, flushInterval)
+internal sealed class GaugeAggregator(IMetricProcessor processor, TimeSpan flushInterval)
+    : BaseAggregator<MetricKey, GaugeData>(processor, flushInterval)
 {
     /// <summary>
     /// Adds <see cref="MetricSnapshot"/> to the aggregator.
