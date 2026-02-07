@@ -21,6 +21,12 @@ public sealed class MetricsConfiguration
     /// </remarks>
     public string Environment { get; init; } = "development";
     
+    /// <remarks>
+    /// If true, MetricBuffer will resolve ILogger&lt;MetricBuffer&gt; from the DI container.
+    /// If false, MetricBuffer will not depend on any framework logger and logging will be no-op.
+    /// </remarks>
+    public bool UseFrameworkLogger { get; set; } = false;
+    
     /// <summary>
     /// Enables or disables metric aggregation.
     /// </summary>
