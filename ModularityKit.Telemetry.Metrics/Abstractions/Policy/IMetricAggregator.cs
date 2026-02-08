@@ -1,3 +1,5 @@
+using ModularityKit.Telemetry.Metrics.Abstractions.Snapshots;
+
 namespace ModularityKit.Telemetry.Metrics.Abstractions.Policy;
 
 /// <summary>
@@ -9,7 +11,7 @@ namespace ModularityKit.Telemetry.Metrics.Abstractions.Policy;
 /// them to downstream pipelines or telemetry backends. This helps reduce
 /// emission overhead and supports statistical calculations.
 /// </remarks>
-public interface IMetricAggregator
+public interface IMetricAggregator : IAsyncDisposable
 {
     /// <summary>
     /// Adds metric snapshot to the aggregator.

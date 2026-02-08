@@ -52,14 +52,8 @@ internal sealed class TopologyProcessor(
     {
         foreach (var snapshot in snapshots)
         {
-            foreach (var (processor, filter) in _processors)
+            foreach (var (processor, _) in _processors)
             {
-                if (!filter(snapshot))
-                {
-                    _logger.LogProcessor(ProcessorLogType.Skipped, snapshot.Metric.Name);
-                    continue;
-                }
-
                 _logger.LogProcessor(ProcessorLogType.Routed, snapshot.Metric.Name, processor.GetType().Name);
                 await processor.EmitAsync(snapshot, ct);
             }
